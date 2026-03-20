@@ -1,0 +1,146 @@
+[
+  {
+    "stateid": 35,
+    "stateName": "ANDAMAN AND NICOBAR ISLANDS"
+  },
+  {
+    "stateid": 28,
+    "stateName": "ANDHRA PRADESH"
+  },
+  {
+    "stateid": 12,
+    "stateName": "ARUNACHAL PRADESH"
+  },
+  {
+    "stateid": 18,
+    "stateName": "ASSAM"
+  },
+  {
+    "stateid": 10,
+    "stateName": "BIHAR"
+  },
+  {
+    "stateid": 4,
+    "stateName": "CHANDIGARH"
+  },
+  {
+    "stateid": 22,
+    "stateName": "CHHATTISGARH"
+  },
+  {
+    "stateid": 38,
+    "stateName": "DADRA AND NAGAR HAVELI AND DAMAN AND DIU"
+  },
+  {
+    "stateid": 7,
+    "stateName": "DELHI"
+  },
+  {
+    "stateid": 30,
+    "stateName": "GOA"
+  },
+  {
+    "stateid": 24,
+    "stateName": "GUJARAT"
+  },
+  {
+    "stateid": 6,
+    "stateName": "HARYANA"
+  },
+  {
+    "stateid": 2,
+    "stateName": "HIMACHAL PRADESH"
+  },
+  {
+    "stateid": 1,
+    "stateName": "JAMMU AND KASHMIR"
+  },
+  {
+    "stateid": 20,
+    "stateName": "JHARKHAND"
+  },
+  {
+    "stateid": 29,
+    "stateName": "KARNATAKA"
+  },
+  {
+    "stateid": 32,
+    "stateName": "KERALA"
+  },
+  {
+    "stateid": 37,
+    "stateName": "LADAKH"
+  },
+  {
+    "stateid": 31,
+    "stateName": "LAKSHADWEEP"
+  },
+  {
+    "stateid": 23,
+    "stateName": "MADHYA PRADESH"
+  },
+  {
+    "stateid": 27,
+    "stateName": "MAHARASHTRA"
+  },
+  {
+    "stateid": 14,
+    "stateName": "MANIPUR"
+  },
+  {
+    "stateid": 17,
+    "stateName": "MEGHALAYA"
+  },
+  {
+    "stateid": 15,
+    "stateName": "MIZORAM"
+  },
+  {
+    "stateid": 13,
+    "stateName": "NAGALAND"
+  },
+  {
+    "stateid": 21,
+    "stateName": "ODISHA"
+  },
+  {
+    "stateid": 34,
+    "stateName": "PUDUCHERRY"
+  },
+  {
+    "stateid": 3,
+    "stateName": "PUNJAB"
+  },
+  {
+    "stateid": 8,
+    "stateName": "RAJASTHAN"
+  },
+  {
+    "stateid": 11,
+    "stateName": "SIKKIM"
+  },
+  {
+    "stateid": 33,
+    "stateName": "TAMIL NADU"
+  },
+  {
+    "stateid": 36,
+    "stateName": "TELANGANA"
+  },
+  {
+    "stateid": 16,
+    "stateName": "TRIPURA"
+  },
+  {
+    "stateid": 9,
+    "stateName": "UTTAR PRADESH"
+  },
+  {
+    "stateid": 5,
+    "stateName": "UTTARAKHAND"
+  },
+  {
+    "stateid": 19,
+    "stateName": "WEST BENGAL"
+  }
+]
