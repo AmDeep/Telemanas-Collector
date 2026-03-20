@@ -1,0 +1,11 @@
+name = "tele-manas-collector"
+main = "src/index.ts"
+compatibility_date = "2024-09-23"
+
+[triggers]
+crons = ["0 3 * * *"]
+
+[[r2_buckets]]
+binding = "TELE_MANAS_BUCKET"
+bucket_name = "tele-manas-data"
+preview_bucket_name = "tele-manas-data-preview"
