@@ -5,7 +5,7 @@
 
 ## Connection
 
-The public dashboard at `https://telemanas.mohfw.gov.in/telemanas-dashboard/#/` is an Angular single-page app — its HTML is an empty shell with no data in it. All the metrics on the page come from unauthenticated REST API endpoints that the Angular app calls at runtime. These were found by extracting URLs from the compiled JavaScript bundle the dashboard loads.
+The public dashboard at `https://telemanas.mohfw.gov.in/telemanas-dashboard/#/` is an Angular single-page app. All the metrics on the page come from unauthenticated REST API endpoints that the Angular app calls at runtime. These were found by extracting URLs from the compiled JavaScript bundle the dashboard loads.
 
 The worker connects directly to those endpoints:
 
@@ -142,7 +142,7 @@ The first version attempted to append new data to an existing daily file: read t
 
 #### Why the `telemanas/{table}/YYYY-MM-DD.ndjson` key structure
 
-PostHog's data warehouse source uses a path prefix with a wildcard (`telemanas/summary/` → picks up all `.ndjson` files under that prefix). The date in the filename is the partition key — PostHog can infer it as a column or you can extract it with `substring(captured_at, 1, 10)` in a query.
+PostHog's data warehouse source uses a path prefix with a wildcard (`telemanas/summary/` which picks up all `.ndjson` files under that prefix). The date in the filename is the partition key — PostHog can infer it as a column or you can extract it with `substring(captured_at, 1, 10)` in a query.
 
 Alternatives considered:
 
@@ -399,7 +399,7 @@ https://<ACCOUNT_ID>.r2.cloudflarestorage.com
 
 ### Step 2 — Create an R2 API token
 
-1. In the Cloudflare dashboard, go to **R2 → Manage R2 API Tokens**
+1. In the Cloudflare dashboard, go to **R2, then Manage R2 API Tokens**
 2. Click **Create API Token**
 3. Set **Permissions** to **Object Read Only**
 4. Under **Specify bucket**, select **tele-manas-data** only (principle of least privilege)
@@ -408,8 +408,8 @@ https://<ACCOUNT_ID>.r2.cloudflarestorage.com
 
 ### Step 3 — Add the data source in PostHog
 
-1. In PostHog, go to **Data pipeline → Sources**
-2. Click **New source** → choose **S3** (Cloudflare R2 uses the S3 protocol)
+1. In PostHog, go to **Data pipeline, then go to Sources**
+2. Click **New source**, then choose **S3** (Cloudflare R2 uses the S3 protocol)
 3. Fill in the form:
 
 | Field | Value |
@@ -448,13 +448,13 @@ The facilities table schema: `captured_at`, `id`, `tmc_id`, `type`, `name`, `sta
 
 PostHog syncs on a schedule after the source is added. To run it immediately:
 
-1. Go to **Data pipeline → Sources**
-2. Find `tele_manas_summary` → click the three-dot menu → **Sync now**
+1. Go to **Data pipeline, then go to Sources**
+2. Find `tele_manas_summary`, then click the three-dot menu **Sync now**
 3. Repeat for `tele_manas_facilities`
 
 ### Step 6 — Query in PostHog
 
-Once the sync completes, both tables are queryable in **Data pipeline → Data warehouse** (or via SQL in any PostHog insight using the HogQL editor):
+Once the sync completes, both tables are queryable in **Data pipeline, Data warehouse** (or via SQL in any PostHog insight using the HogQL editor):
 
 ```sql
 -- Total calls over time
