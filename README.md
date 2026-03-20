@@ -1,10 +1,9 @@
 # tele-manas-collector
 
-A Cloudflare Worker that collects data from the Tele MANAS national mental health helpline and stores it in Cloudflare R2 for analysis in PostHog.
 
 ---
 
-## Where it actually connects
+## Connection
 
 The public dashboard at `https://telemanas.mohfw.gov.in/telemanas-dashboard/#/` is an Angular single-page app — its HTML is an empty shell with no data in it. All the metrics on the page come from unauthenticated REST API endpoints that the Angular app calls at runtime. These were found by extracting URLs from the compiled JavaScript bundle the dashboard loads.
 
@@ -44,23 +43,9 @@ These exist in the bundle but return HTTP 404 without a valid Bearer token and c
 Two NDJSON files per day in R2 — one per PostHog data warehouse table:
 
 ```
-telemanas/summary/2026-03-20.ndjson       ← one flat row per run
-telemanas/facilities/2026-03-20.ndjson    ← one row per facility (TMC + MI + RCC)
+telemanas/summary/2026-03-20.ndjson       which produces one flat row per run
+telemanas/facilities/2026-03-20.ndjson    which produces one row per facility (TMC + MI + RCC)
 ```
-
-**Summary row** (one per collection run):
-```json
-{"captured_at":"2026-03-20T03:00:12.341Z","total_calls":3501120,"page_views":613178,"cells_tmc":53,"cells_mi":23,"cells_rcc":5,"facility_count":81,"state_count":36}
-```
-
-**Facility row** (81 rows per run: 53 TMC + 23 MI + 5 RCC):
-```json
-{"captured_at":"2026-03-20T03:00:12.341Z","id":453,"tmc_id":"TMCAP02","type":"TMC","name":"Government Hospital for Mental Care","state":"ANDHRA PRADESH","state_id":28,"city":"Visakhapatnam","status":"Active","active_counsellors":2,"mhp":0,"mentoring_institute":"KGMU Lucknow","rcc":"PGIMER,Chandigarh"}
-```
-
-Fields not stored (operational / SVG / social media): `address`, `email`, `phoneNumber`, `adminIncharge`, `adminContact`, `x`, `y`, `logo`, `twitter`, `twitter_url`, `instagram`, `instagram_url`, `facebook`, `facebook_url`, `youtube`, `youtube_url`.
-
----
 
 ## Architecture
 
@@ -96,27 +81,6 @@ Every choice below had at least one real alternative considered. The reasoning i
 
 ---
 
-#### Why Cloudflare Workers, not a VM or container
-
-The job is a once-daily HTTP fan-out followed by two file writes. It holds no state between runs and the total wall-clock time is under five seconds. A persistent process (EC2, Cloud Run, a VPS cron) would be idle 99.99% of the time and would require OS patching, monitoring, and SSH access management.
-
-Cloudflare Workers' free tier covers 100,000 requests/day with a 10ms–30s CPU budget per invocation, which comfortably covers this workload. The cron trigger (`0 3 * * *` in `wrangler.toml`) is first-class — no external scheduler (ECS Scheduled Tasks, Cloud Scheduler, GitHub Actions) is needed.
-
-The one trade-off: Workers cannot run Node.js built-ins directly. The code uses only `fetch` and `AbortController`, both of which are native to the Workers runtime, so this isn't a limitation in practice.
-
----
-
-#### Why Cloudflare R2, not S3 or GCS
-
-Three reasons:
-
-1. **No egress fees.** R2 charges zero for data transfer out. S3 charges $0.09/GB egress. At this scale the difference is cents, but it's a good default for a system that may grow.
-2. **S3-compatible API.** PostHog's data warehouse source is already configured for S3. R2 exposes the same API at a Cloudflare-scoped endpoint (`https://<ACCOUNT_ID>.r2.cloudflarestorage.com`), so no special PostHog integration is needed — just point it at the right URL.
-3. **Same Cloudflare account.** The Worker binds to R2 via an environment binding (`TELE_MANAS_BUCKET`) which is resolved at runtime with no credentials in code and no network hop. Writing to S3 from a Worker would require storing AWS credentials as secrets and making an outbound HTTPS call.
-
-The alternative of writing directly to a PostHog-managed database (e.g., via the PostHog capture API or a direct Postgres connection) was rejected because it couples the collector tightly to PostHog — R2 as an intermediate store lets you swap the downstream consumer without changing the worker.
-
----
 
 #### Why NDJSON, not CSV or Parquet
 
@@ -158,8 +122,6 @@ The seven API calls are independent — no response depends on another — so ru
 
 The retry logic is attached at the individual call level, not the whole snapshot. This matters because a single slow endpoint (e.g., `getTMC/0/MI` timing out) would not abort the other six calls if retried in isolation. A global timeout wrapping the entire `Promise.all` would cancel all calls on the first failure.
 
-Backoff is exponential (1s, then 2s before the third attempt) to avoid hammering a temporarily overloaded endpoint. Three attempts total was chosen as the upper bound: two retries is usually enough to ride out a transient network hiccup, and three keeps the maximum possible wall-clock time under 15 seconds, well within the Cloudflare Worker CPU limit.
-
 ---
 
 #### Why a hard 10-second timeout per call
@@ -170,7 +132,7 @@ The Tele MANAS server is a government-hosted backend with inconsistent response 
 
 ---
 
-#### Why idempotent overwrite, not append
+#### Why overwrite, not append
 
 The first version attempted to append new data to an existing daily file: read the object from R2, concatenate the new NDJSON line, write it back. This has a race condition: if two invocations run concurrently (which Cloudflare does not guarantee it won't do), both would read the same original object and each would overwrite with a file containing only their own data, silently dropping the other's write.
 
